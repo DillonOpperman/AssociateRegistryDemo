@@ -1,0 +1,78 @@
+@if (loading()) {
+  <p class="muted">Loading dashboard…</p>
+} @else if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+} @else if (stats(); as stats) {
+  <p class="lede">Workforce snapshot for this demonstration registry. Every count is loaded from the local API.</p>
+
+  <section class="stat-grid" aria-label="Associate counts">
+    <article class="stat-card">
+      <p>Total associates</p>
+      <strong>{{ stats.totalAssociates }}</strong>
+    </article>
+    <article class="stat-card stat-active">
+      <p>Active</p>
+      <strong>{{ stats.activeAssociates }}</strong>
+    </article>
+    <article class="stat-card stat-inactive">
+      <p>Inactive</p>
+      <strong>{{ stats.inactiveAssociates }}</strong>
+    </article>
+    <article class="stat-card stat-leave">
+      <p>On leave</p>
+      <strong>{{ stats.onLeaveAssociates }}</strong>
+    </article>
+  </section>
+
+  <section class="split">
+    <article class="panel">
+      <div class="panel-heading">
+        <h2>Recent changes</h2>
+        <a routerLink="/audit">View audit log</a>
+      </div>
+      @if (stats.recentChanges.length === 0) {
+        <p class="empty-state">No changes have been recorded yet.</p>
+      } @else {
+        <ul class="activity-list">
+          @for (change of stats.recentChanges; track change.id) {
+            <li>
+              <div class="activity-top">
+                <span class="activity-action">{{ auditActionLabel(change.action) }}</span>
+                <a [routerLink]="['/associates']" [queryParams]="{ search: change.associateId }">
+                  {{ change.associateName }}
+                </a>
+                <span class="muted">{{ change.associateId }}</span>
+              </div>
+              <p>{{ change.fieldChanges || 'No field detail recorded' }}</p>
+              <p class="meta">{{ formatDateTime(change.timestamp) }} · {{ change.performedBy }}</p>
+            </li>
+          }
+        </ul>
+      }
+    </article>
+
+    <article class="panel">
+      <div class="panel-heading">
+        <h2>Recent registrations</h2>
+        <a routerLink="/associates">Open directory</a>
+      </div>
+      @if (stats.recentRegistrations.length === 0) {
+        <p class="empty-state">No associates have been registered yet.</p>
+      } @else {
+        <ul class="activity-list">
+          @for (associate of stats.recentRegistrations; track associate.id) {
+            <li>
+              <div class="activity-top">
+                <a [routerLink]="['/associates', associate.id]">{{ associate.fullName }}</a>
+                <span class="muted">{{ associate.associateId }}</span>
+                <app-status-badge [status]="associate.status" />
+              </div>
+              <p>{{ associate.jobTitle }} · {{ associate.department }}</p>
+              <p class="meta">Registered {{ formatDate(associate.registrationDate) }}</p>
+            </li>
+          }
+        </ul>
+      }
+    </article>
+  </section>
+}

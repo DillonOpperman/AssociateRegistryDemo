@@ -1,0 +1,87 @@
+<form class="panel form-panel" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="panel-heading">
+    <h2>{{ mode() === 'create' ? 'New associate' : 'Update profile' }}</h2>
+    <p>Fields marked as required must be completed before the record can be saved.</p>
+  </div>
+
+  @if (serverMessage()) {
+    <p class="error-banner" role="alert">{{ serverMessage() }}</p>
+  }
+
+  <div class="form-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Associate ID</mat-label>
+      <input matInput formControlName="associateId" autocomplete="off" />
+      <mat-hint>Format AR-10001</mat-hint>
+      <mat-error>{{ messageFor('associateId') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        @for (status of statuses; track status.value) {
+          <mat-option [value]="status.value">{{ status.label }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ messageFor('status') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>First name</mat-label>
+      <input matInput formControlName="firstName" autocomplete="given-name" />
+      <mat-error>{{ messageFor('firstName') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Last name</mat-label>
+      <input matInput formControlName="lastName" autocomplete="family-name" />
+      <mat-error>{{ messageFor('lastName') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" autocomplete="email" />
+      <mat-error>{{ messageFor('email') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Phone number</mat-label>
+      <input matInput formControlName="phoneNumber" autocomplete="tel" />
+      <mat-hint>Optional</mat-hint>
+      <mat-error>{{ messageFor('phoneNumber') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Department</mat-label>
+      <mat-select formControlName="department">
+        @for (department of departments; track department) {
+          <mat-option [value]="department">{{ department }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ messageFor('department') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Job title</mat-label>
+      <input matInput formControlName="jobTitle" />
+      <mat-error>{{ messageFor('jobTitle') }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Office location</mat-label>
+      <mat-select formControlName="officeLocation">
+        @for (office of offices; track office) {
+          <mat-option [value]="office">{{ office }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>{{ messageFor('officeLocation') }}</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-actions">
+    <button mat-stroked-button type="button" (click)="cancelled.emit()">Cancel</button>
+    <button mat-flat-button type="submit" class="primary-action" [disabled]="submitting()">
+      {{ submitting() ? 'Saving…' : mode() === 'create' ? 'Register associate' : 'Save changes' }}
+    </button>
+  </div>
+</form>

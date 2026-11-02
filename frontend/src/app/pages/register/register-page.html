@@ -1,0 +1,8 @@
+<app-associate-form
+  mode="create"
+  [submitting]="submitting()"
+  [serverMessage]="serverMessage()"
+  [fieldErrors]="fieldErrors()"
+  (submitted)="save($event)"
+  (cancelled)="cancel()"
+/>

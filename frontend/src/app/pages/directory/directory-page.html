@@ -1,0 +1,112 @@
+<div class="toolbar">
+  <form class="filters" [formGroup]="filters">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Search</mat-label>
+      <input matInput formControlName="search" placeholder="Name, email, or ID" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Department</mat-label>
+      <mat-select formControlName="department">
+        <mat-option value="">All departments</mat-option>
+        @for (department of departments(); track department) {
+          <mat-option [value]="department">{{ department }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="">All statuses</mat-option>
+        @for (status of statuses; track status.value) {
+          <mat-option [value]="status.value">{{ status.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </form>
+  @if (role.isAdmin()) {
+    <a mat-flat-button class="primary-action" routerLink="/associates/new">Register associate</a>
+  }
+</div>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+<div class="table-panel">
+  <div class="table-meta">
+    <span>{{ totalElements() }} {{ totalElements() === 1 ? 'associate' : 'associates' }}</span>
+  </div>
+  <div class="table-scroll">
+    <table
+      mat-table
+      [dataSource]="rows()"
+      matSort
+      matSortDisableClear
+      [matSortActive]="sortActive()"
+      [matSortDirection]="sortDirection()"
+      (matSortChange)="onSort($event)"
+    >
+      <ng-container matColumnDef="associateId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Associate ID</th>
+        <td mat-cell *matCellDef="let row">{{ row.associateId }}</td>
+      </ng-container>
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Full name</th>
+        <td mat-cell *matCellDef="let row">{{ row.fullName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let row">{{ row.email }}</td>
+      </ng-container>
+      <ng-container matColumnDef="department">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+        <td mat-cell *matCellDef="let row">{{ row.department }}</td>
+      </ng-container>
+      <ng-container matColumnDef="jobTitle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Job title</th>
+        <td mat-cell *matCellDef="let row">{{ row.jobTitle }}</td>
+      </ng-container>
+      <ng-container matColumnDef="officeLocation">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Office location</th>
+        <td mat-cell *matCellDef="let row">{{ row.officeLocation }}</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let row"><app-status-badge [status]="row.status" /></td>
+      </ng-container>
+      <ng-container matColumnDef="registrationDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Registration date</th>
+        <td mat-cell *matCellDef="let row">{{ formatDate(row.registrationDate) }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let row" class="actions">
+          <a [routerLink]="['/associates', row.id]">View</a>
+          @if (role.isAdmin()) {
+            <a [routerLink]="['/associates', row.id, 'edit']">Edit</a>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  </div>
+
+  @if (!loading() && !errorMessage() && rows().length === 0) {
+    <p class="empty-state">No associates match the current search or filters.</p>
+  }
+
+  <mat-paginator
+    [length]="totalElements()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 25, 50]"
+    (page)="onPage($event)"
+    aria-label="Associate pages"
+  />
+</div>

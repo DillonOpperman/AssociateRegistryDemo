@@ -1,0 +1,44 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">AR</span>
+      <div>
+        <div class="brand-name">Associate Registry</div>
+        <div class="brand-sub">Demo workspace</div>
+      </div>
+    </div>
+    <nav class="side-nav" aria-label="Primary">
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/associates" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Directory</a>
+      @if (role.isAdmin()) {
+        <a routerLink="/associates/new" routerLinkActive="active">Register</a>
+      }
+      <a routerLink="/audit" routerLinkActive="active">Audit log</a>
+    </nav>
+    <p class="sidebar-foot">Synthetic demonstration data. Not an employer system.</p>
+  </aside>
+
+  <div class="workspace">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Internal administration</p>
+        <h1>{{ pageTitle() }}</h1>
+      </div>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="role-field">
+        <mat-label>Simulated role</mat-label>
+        <mat-select [value]="role.role()" (selectionChange)="onRole($event.value)">
+          <mat-option value="ADMINISTRATOR">Administrator</mat-option>
+          <mat-option value="READ_ONLY">Read-Only User</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </header>
+
+    <div class="content">
+      <p class="sim-banner" role="note">
+        Simulated permissions. This selector only changes what the page shows. It is not authentication
+        or secure access control, and the API does not enforce it.
+      </p>
+      <router-outlet />
+    </div>
+  </div>
+</div>

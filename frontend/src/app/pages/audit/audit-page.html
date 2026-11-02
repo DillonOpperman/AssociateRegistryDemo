@@ -1,0 +1,51 @@
+<p class="lede">
+  The API writes an audit record whenever an associate is created or updated. The actor name comes from the simulated role selected in the header.
+</p>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+@if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+}
+
+<div class="table-panel">
+  <div class="table-scroll">
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Action</th>
+          <th>Associate</th>
+          <th>Changes</th>
+          <th>Performed by</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.id) {
+          <tr>
+            <td>{{ formatDateTime(row.timestamp) }}</td>
+            <td>{{ auditActionLabel(row.action) }}</td>
+            <td>
+              <a [routerLink]="['/associates']" [queryParams]="{ search: row.associateId }">{{ row.associateName }}</a>
+              <div class="muted">{{ row.associateId }}</div>
+            </td>
+            <td class="changes">{{ row.fieldChanges || '—' }}</td>
+            <td>{{ row.performedBy }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (!loading() && !errorMessage() && rows().length === 0) {
+    <p class="empty-state">No audit records yet.</p>
+  }
+  <mat-paginator
+    [length]="totalElements()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="onPage($event)"
+    aria-label="Audit log pages"
+  />
+</div>

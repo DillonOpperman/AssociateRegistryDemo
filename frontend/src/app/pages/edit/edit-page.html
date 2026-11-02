@@ -1,0 +1,15 @@
+@if (loading()) {
+  <p class="muted">Loading associate…</p>
+} @else if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+} @else {
+  <app-associate-form
+    mode="edit"
+    [associate]="associate()"
+    [submitting]="submitting()"
+    [serverMessage]="serverMessage()"
+    [fieldErrors]="fieldErrors()"
+    (submitted)="save($event)"
+    (cancelled)="cancel()"
+  />
+}

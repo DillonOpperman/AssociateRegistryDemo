@@ -1,0 +1,38 @@
+<p class="back-link"><a routerLink="/associates">Back to directory</a></p>
+
+@if (loading()) {
+  <p class="muted">Loading profile…</p>
+} @else if (errorMessage()) {
+  <p class="error-banner" role="alert">{{ errorMessage() }}</p>
+} @else if (associate(); as associate) {
+  <article class="panel profile-panel">
+    <div class="profile-heading">
+      <div>
+        <p class="eyebrow">{{ associate.associateId }}</p>
+        <h2>{{ associate.fullName }}</h2>
+        <p class="muted">{{ associate.jobTitle }} · {{ associate.department }}</p>
+      </div>
+      <div class="profile-actions">
+        <app-status-badge [status]="associate.status" />
+        @if (role.isAdmin()) {
+          <a mat-flat-button class="primary-action" [routerLink]="['/associates', associate.id, 'edit']">Edit profile</a>
+        } @else {
+          <p class="read-only-note">Read-only view. Editing controls are hidden for this simulated role.</p>
+        }
+      </div>
+    </div>
+
+    <dl class="detail-grid">
+      <dt>Email</dt>
+      <dd>{{ associate.email }}</dd>
+      <dt>Phone</dt>
+      <dd>{{ associate.phoneNumber || '—' }}</dd>
+      <dt>Office location</dt>
+      <dd>{{ associate.officeLocation }}</dd>
+      <dt>Registration date</dt>
+      <dd>{{ formatDate(associate.registrationDate) }}</dd>
+      <dt>Last updated</dt>
+      <dd>{{ formatDateTime(associate.lastUpdatedAt) }}</dd>
+    </dl>
+  </article>
+}
