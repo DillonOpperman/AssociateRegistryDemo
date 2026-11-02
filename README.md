@@ -4,6 +4,76 @@ A locally hosted associate-management application for demonstrating enterprise w
 
 Administrators and read-only users are simulated in the browser. That role selector is a user-interface demonstration. It is not authentication, and it is not secure access control.
 
+## Instructions
+
+### What you need
+
+- Windows with PowerShell
+- A JDK 21 or newer (`java` on `PATH`, or `JAVA_HOME` set)
+- Node.js 22.12 or newer and npm
+- Internet access the first time, so Maven and npm can download dependencies
+
+This project was built with Java 25 and Node.js 22.13. Maven does not need to be installed separately. `backend/mvnw.cmd` downloads it.
+
+### Run it
+
+1. Clone the repository and open PowerShell in that folder.
+
+```powershell
+git clone https://github.com/DillonOpperman/AssociateRegistryDemo.git
+cd AssociateRegistryDemo
+```
+
+2. Start the API and the UI. This opens two PowerShell windows. The first API start can take a minute while Maven finishes. If `frontend/node_modules` is missing, the UI window runs `npm install` first.
+
+```powershell
+.\start.ps1
+```
+
+3. Wait until the API window prints `Started AssociateRegistryApplication`.
+
+4. Open the app at http://localhost:4200. The API is at http://localhost:8080.
+
+5. Stop the app by pressing `Ctrl+C` in each window.
+
+### Try the demo
+
+- Leave the role set to **Administrator** to register an associate or edit a profile.
+- Switch the role in the top bar to **Read-Only User**. Register and edit controls disappear. Those routes send you back to the directory.
+- The banner on every page says these roles are simulated. The API does not enforce them.
+- The directory starts with 32 fictional associates. Search, department, and status filters all come from the API.
+- Changes you save stay in `backend/data` after you restart. That folder is not part of the git repository. Delete it and restart the API to load the original sample data again.
+
+### Start each app yourself
+
+Use this when you want the API and the UI in terminals you already have open.
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Semeru\jdk-25.0.2.10-openj9"
+$env:Path = "$env:JAVA_HOME\bin;" + $env:Path
+
+# Terminal 1 — API
+cd .\backend
+.\mvnw.cmd spring-boot:run
+
+# Terminal 2 — UI
+cd .\frontend
+npm install
+npm start
+```
+
+Change `JAVA_HOME` if your JDK is installed somewhere else. `npm install` is only needed the first time, or after dependencies change.
+
+### Check that it builds
+
+```powershell
+cd .\backend
+.\mvnw.cmd test
+
+cd ..\frontend
+npm run build
+```
+
 ## Architecture
 
 The repository has two applications:
@@ -49,57 +119,7 @@ Frontend folders:
 | Database | H2 2.4, file-based, stored in `backend/data` |
 | Build | Maven Wrapper, npm |
 
-This machine has Java 25 installed and does not have a separate Java 21 JDK. The backend is compiled with `--release 21` and runs on Java 25, which Spring Boot 4.1 supports. Maven is not on the system `PATH`; `backend/mvnw.cmd` downloads and runs Maven. Angular 22 requires a newer Node.js than the installed Node 22.13.1, so the UI uses the current Angular 21 release that supports this Node version.
-
-## Setup
-
-Requirements:
-
-- JDK 21 or newer (`java` on `PATH`, or `JAVA_HOME` set)
-- Node.js 22.12 or newer and npm
-- PowerShell
-- Network access the first time Maven or npm downloads dependencies
-
-From the project root:
-
-```powershell
-.\start.ps1
-```
-
-That opens two windows:
-
-- API: http://localhost:8080
-- UI: http://localhost:4200
-
-Wait until the API window prints `Started AssociateRegistryApplication`, then open the UI. Stop each window with `Ctrl+C`.
-
-To start them yourself:
-
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Semeru\jdk-25.0.2.10-openj9"
-$env:Path = "$env:JAVA_HOME\bin;" + $env:Path
-
-# Terminal 1
-cd .\backend
-.\mvnw.cmd spring-boot:run
-
-# Terminal 2
-cd .\frontend
-npm install
-npm start
-```
-
-`npm install` is only required the first time, or after dependencies change. The frontend in this workspace already has `node_modules` installed.
-
-### Checks
-
-```powershell
-cd .\backend
-.\mvnw.cmd test
-
-cd ..\frontend
-npm run build
-```
+The backend is compiled with `--release 21` and runs on Java 21 through 27, including Java 25. Maven does not need to be on `PATH`; `backend/mvnw.cmd` downloads and runs it. Angular 22 needs a newer Node.js than 22.13, so the UI uses Angular 21, which supports the Node version listed above.
 
 ## Sample data
 

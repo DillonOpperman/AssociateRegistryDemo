@@ -21,6 +21,10 @@ Write-Host 'Associate Registry API: http://localhost:8080'
 $frontendCommand = @"
 `$env:NG_CLI_ANALYTICS = 'false'
 Set-Location -LiteralPath '$Root\frontend'
+if (-not (Test-Path -LiteralPath 'node_modules')) {
+    Write-Host 'Installing frontend dependencies (first run)...'
+    npm install
+}
 Write-Host 'Associate Registry UI: http://localhost:4200'
 npm start
 "@
